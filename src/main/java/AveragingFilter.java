@@ -28,34 +28,54 @@ class AveragingFilter {
     }
 
     void filter() {
+        System.out.println("Filtering...");
+
         for (int i = 0; i < img.getWidth(); i++) {
             for (int j = 0; j < img.getHeight(); j++) {
-                Color[] subPixels = getSubPixels(i, j);
-                ColorProcessor processor = new ColorProcessor(subPixels);
+                Color[][] matrix = getSubMatrix(i, j);
+                ColorProcessor processor = new ColorProcessor(matrix);
                 img.setRGB(i, j, new Color(processor.getAverageRed(),
                         processor.getAverageBlue(), processor.getAverageGreen()).getRGB());
             }
         }
+
+        System.out.println("Filtering done!");
     }
 
-    private Color[] getSubPixels(int i, int j) {
-        Color[] subPixels = new Color[n * n];
-        int iMinus1 = i - 1 < 0 ? i + 1 : i - 1;
-        int jMinus1 = j - 1 < 0 ? j + 1 : j - 1;
-        int iPlus1 = i + 1 >= img.getWidth() ? i - 1 : i + 1;
-        int jPlus1 = j + 1 >= img.getHeight() ? j - 1 : j + 1;
+    private Color[][] getSubMatrix(int x, int y) {
+        Color[][] matrix = new Color[n][n];
 
-        subPixels[0] = new Color(img.getRGB(iMinus1, jMinus1));
-        subPixels[1] = new Color(img.getRGB(iMinus1, j));
-        subPixels[2] = new Color(img.getRGB(iMinus1, jPlus1));
-        subPixels[3] = new Color(img.getRGB(i, jPlus1));
-        subPixels[4] = new Color(img.getRGB(iPlus1, jPlus1));
-        subPixels[5] = new Color(img.getRGB(iPlus1, j));
-        subPixels[6] = new Color(img.getRGB(iPlus1, jMinus1));
-        subPixels[7] = new Color(img.getRGB(i, jMinus1));
-        subPixels[8] = new Color(img.getRGB(i, j));
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
+                matrix[i][j] = new Color(img.getRGB(getPosX(x, i), getPosY(y, j)));
 
-        return subPixels;
+        return matrix;
+    }
+
+    private int getPosX(int originX, int currentX) {
+        int centerPoint = n / 2;
+        int diffX = centerPoint - currentX;
+
+        if (originX - diffX < 0)
+            return originX + diffX;
+
+        if (originX - diffX >= img.getWidth())
+            return originX + diffX;
+
+        return originX - diffX;
+    }
+
+    private int getPosY(int originY, int currentY) {
+        int centerPoint = n / 2;
+        int diffY = centerPoint - currentY;
+
+        if (originY - diffY < 0)
+            return originY + diffY;
+
+        if (originY - diffY >= img.getHeight())
+            return originY + diffY;
+
+        return originY - diffY;
     }
 
     void writeImg(String output) {
