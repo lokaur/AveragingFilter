@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.util.Arrays;
 
 class ColorProcessor {
 
@@ -9,25 +8,20 @@ class ColorProcessor {
         this.colors = colors;
     }
 
-    Color getAverageColor() {
-        int[] R = new int[colors.length * colors.length];
-        int[] G = new int[colors.length * colors.length];
-        int[] B = new int[colors.length * colors.length];
-
-        int index = 0;
-        for (Color[] color : colors) {
-            for (Color aColor : color) {
-                R[index] = aColor.getRed();
-                G[index] = aColor.getGreen();
-                B[index] = aColor.getBlue();
-                index++;
+    int getAverageRgb() {
+        int sumR = 0;
+        int sumG = 0;
+        int sumB = 0;
+        for (Color[] row : colors) {
+            for (Color col : row) {
+                sumR += col.getRed();
+                sumG += col.getGreen();
+                sumB += col.getBlue();
             }
         }
 
-        Arrays.sort(R);
-        Arrays.sort(G);
-        Arrays.sort(B);
+        int n2 = colors.length * colors.length;
 
-        return new Color(R[R.length / 2], G[G.length / 2], B[B.length / 2]);
+        return new Color(sumR / n2, sumG / n2, sumB / n2).getRGB();
     }
 }
