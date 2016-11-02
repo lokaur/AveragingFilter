@@ -9,39 +9,25 @@ class ColorProcessor {
         this.colors = colors;
     }
 
-    int getAverageRed() {
+    Color getAverageColor() {
         int[] R = new int[colors.length * colors.length];
-        int indexR = 0;
-        for (Color[] color : colors)
-            for (Color aColor : color)
-                R[indexR++] = aColor.getRed();
+        int[] G = new int[colors.length * colors.length];
+        int[] B = new int[colors.length * colors.length];
+
+        int index = 0;
+        for (Color[] color : colors) {
+            for (Color aColor : color) {
+                R[index] = aColor.getRed();
+                G[index] = aColor.getGreen();
+                B[index] = aColor.getBlue();
+                index++;
+            }
+        }
 
         Arrays.sort(R);
-
-        return R[R.length / 2];
-    }
-
-    int getAverageBlue() {
-        int[] B = new int[colors.length * colors.length];
-        int indexR = 0;
-        for (Color[] color : colors)
-            for (Color aColor : color)
-                B[indexR++] = aColor.getBlue();
-
+        Arrays.sort(G);
         Arrays.sort(B);
 
-        return B[B.length / 2];
-    }
-
-    int getAverageGreen() {
-        int[] G = new int[colors.length * colors.length];
-        int indexR = 0;
-        for (Color[] color : colors)
-            for (Color aColor : color)
-                G[indexR++] = aColor.getGreen();
-
-        Arrays.sort(G);
-
-        return G[G.length / 2];
+        return new Color(R[R.length / 2], G[G.length / 2], B[B.length / 2]);
     }
 }

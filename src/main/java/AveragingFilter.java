@@ -34,8 +34,7 @@ class AveragingFilter {
             for (int j = 0; j < img.getHeight(); j++) {
                 Color[][] matrix = getSubMatrix(i, j);
                 ColorProcessor processor = new ColorProcessor(matrix);
-                img.setRGB(i, j, new Color(processor.getAverageRed(),
-                        processor.getAverageBlue(), processor.getAverageGreen()).getRGB());
+                img.setRGB(i, j, processor.getAverageColor().getRGB());
             }
         }
 
