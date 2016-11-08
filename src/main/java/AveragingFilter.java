@@ -59,28 +59,28 @@ class AveragingFilter {
 
         for (int i = 0; i < frameSide; i++) {
             for (int j = 0; j < frameSide; j++) {
-                Color color = new Color(img.getRGB(getPos(x, i, img.getWidth()), getPos(y, j, img.getHeight())));
-                sumR += color.getRed();
-                sumG += color.getGreen();
-                sumB += color.getBlue();
+                int color = 0xff000000 | img.getRGB(getPos(x, i, img.getWidth()), getPos(y, j, img.getHeight()));
+                sumR += color >> 16 & 0xFF;
+                sumG += color >> 8 & 0xFF;
+                sumB += color & 0xFF;
             }
         }
 
-        return new Color(sumR / squareFrame, sumG / squareFrame, sumB / squareFrame).getRGB();
+        return  0xff000000 |
+                (sumR / squareFrame & 0xFF) << 16 |
+                (sumG / squareFrame & 0xFF) << 8 |
+                sumB / squareFrame & 0xFF;
     }
 
     private int getPos(int origin, int current, int maxSize) {
         int diff = halfFrame - current;
         int target = origin - diff;
-        int pos;
 
         if (target < 0 || target >= maxSize) {
-            pos = origin + diff;
+            return origin + diff;
         } else {
-            pos = target;
+            return target;
         }
-
-        return pos;
     }
 
     void writeImg(String output) {
