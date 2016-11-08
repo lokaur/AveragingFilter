@@ -1,5 +1,4 @@
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -59,14 +58,17 @@ class AveragingFilter {
 
         for (int i = 0; i < frameSide; i++) {
             for (int j = 0; j < frameSide; j++) {
-                Color color = new Color(img.getRGB(getPos(x, i, img.getWidth()), getPos(y, j, img.getHeight())));
-                sumR += color.getRed();
-                sumG += color.getGreen();
-                sumB += color.getBlue();
+                int rgb = img.getRGB(getPos(x, i, img.getWidth()), getPos(y, j, img.getHeight()));
+                sumR += (rgb >> 16) & 0xFF;
+                sumG += (rgb >> 8) & 0xFF;
+                sumB += (rgb) & 0xFF;
             }
         }
 
-        return new Color(sumR / squareFrame, sumG / squareFrame, sumB / squareFrame).getRGB();
+        return ((1 & 0xFF) << 24) |
+                ((sumR / squareFrame & 0xFF) << 16) |
+                ((sumG / squareFrame & 0xFF) << 8) |
+                ((sumB / squareFrame & 0xFF));
     }
 
     private int getPos(int origin, int current, int maxSize) {
