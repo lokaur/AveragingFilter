@@ -44,7 +44,7 @@ class AveragingFilter {
         System.out.println("Filtering done!");
     }
 
-    private int getAverageRgb(int y, int x) {
+    private int getAverageRgb(int x, int y) {
         int sumR = 0;
         int sumG = 0;
         int sumB = 0;
@@ -59,16 +59,6 @@ class AveragingFilter {
         }
 
         return new Color(sumR / squareFrame, sumG / squareFrame, sumB / squareFrame).getRGB();
-    }
-
-    private Color[][] getSubMatrix(int x, int y) {
-        Color[][] matrix = new Color[frameSide][frameSide];
-
-        for (int i = 0; i < frameSide; i++)
-            for (int j = 0; j < frameSide; j++)
-                matrix[i][j] = new Color(img.getRGB(getPos(x, i), getPos(y, j)));
-
-        return matrix;
     }
 
     private int getPos(int origin, int current) {
