@@ -8,10 +8,12 @@ class AveragingFilter {
 
     private BufferedImage img;
     private int n;
+    private int centerPoint;
 
     AveragingFilter(String in, String number) {
         try {
             n = Integer.parseInt(number);
+            centerPoint = n / 2;
             if (n % 2 == 0) {
                 System.out.println("N must be odd number!");
                 System.exit(0);
@@ -46,35 +48,23 @@ class AveragingFilter {
 
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++)
-                matrix[i][j] = new Color(img.getRGB(getPosX(x, i), getPosY(y, j)));
+                matrix[i][j] = new Color(img.getRGB(getPos(x, i), getPos(y, j)));
 
         return matrix;
     }
 
-    private int getPosX(int originX, int currentX) {
-        int centerPoint = n / 2;
-        int diffX = centerPoint - currentX;
+    private int getPos(int origin, int current) {
+        int diff = centerPoint - current;
+        int target = origin - diff;
+        int pos;
 
-        if (originX - diffX < 0)
-            return originX + diffX;
+        if (target < 0 || target >= img.getHeight()) {
+            pos = origin + diff;
+        } else {
+            pos = origin - diff;
+        }
 
-        if (originX - diffX >= img.getWidth())
-            return originX + diffX;
-
-        return originX - diffX;
-    }
-
-    private int getPosY(int originY, int currentY) {
-        int centerPoint = n / 2;
-        int diffY = centerPoint - currentY;
-
-        if (originY - diffY < 0)
-            return originY + diffY;
-
-        if (originY - diffY >= img.getHeight())
-            return originY + diffY;
-
-        return originY - diffY;
+        return pos;
     }
 
     void writeImg(String output) {
