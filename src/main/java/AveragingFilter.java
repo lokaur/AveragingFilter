@@ -7,18 +7,21 @@ import java.io.IOException;
 class AveragingFilter {
 
     private BufferedImage img;
-    private int n;
-    private int centerPoint;
+    private int frameSide;
+    private int halfFrame;
+    private int squareFrame;
 
     AveragingFilter(String in, String number) {
         try {
-            n = Integer.parseInt(number);
-            centerPoint = n / 2;
-            if (n % 2 == 0) {
+            frameSide = Integer.parseInt(number);
+
+            if (frameSide % 2 == 0) {
                 System.out.println("N must be odd number!");
                 System.exit(0);
             }
 
+            halfFrame = frameSide / 2;
+            squareFrame = frameSide * frameSide;
             img = ImageIO.read(new File(in));
         } catch (NumberFormatException e) {
             System.out.println("Error parsing string: " + number);
@@ -34,42 +37,42 @@ class AveragingFilter {
 
         for (int i = 0; i < img.getWidth(); i++) {
             for (int j = 0; j < img.getHeight(); j++) {
-                img.setRGB(i, j, getAverageRgb(getSubMatrix(i, j)));
+                img.setRGB(i, j, getAverageRgb(i, j));
             }
         }
 
         System.out.println("Filtering done!");
     }
 
-    private int getAverageRgb(Color[][] subMatrix) {
+    private int getAverageRgb(int y, int x) {
         int sumR = 0;
         int sumG = 0;
         int sumB = 0;
-        for (Color[] row : subMatrix) {
-            for (Color col : row) {
-                sumR += col.getRed();
-                sumG += col.getGreen();
-                sumB += col.getBlue();
+
+        for (int i = 0; i < frameSide; i++) {
+            for (int j = 0; j < frameSide; j++) {
+                Color color = new Color(img.getRGB(getPos(x, i), getPos(y, j)));
+                sumR += color.getRed();
+                sumG += color.getGreen();
+                sumB += color.getBlue();
             }
         }
 
-        int n2 = subMatrix.length * subMatrix.length;
-
-        return new Color(sumR / n2, sumG / n2, sumB / n2).getRGB();
+        return new Color(sumR / squareFrame, sumG / squareFrame, sumB / squareFrame).getRGB();
     }
 
     private Color[][] getSubMatrix(int x, int y) {
-        Color[][] matrix = new Color[n][n];
+        Color[][] matrix = new Color[frameSide][frameSide];
 
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+        for (int i = 0; i < frameSide; i++)
+            for (int j = 0; j < frameSide; j++)
                 matrix[i][j] = new Color(img.getRGB(getPos(x, i), getPos(y, j)));
 
         return matrix;
     }
 
     private int getPos(int origin, int current) {
-        int diff = centerPoint - current;
+        int diff = halfFrame - current;
         int target = origin - diff;
         int pos;
 
