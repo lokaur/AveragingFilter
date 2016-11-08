@@ -34,13 +34,28 @@ class AveragingFilter {
 
         for (int i = 0; i < img.getWidth(); i++) {
             for (int j = 0; j < img.getHeight(); j++) {
-                Color[][] matrix = getSubMatrix(i, j);
-                ColorProcessor processor = new ColorProcessor(matrix);
-                img.setRGB(i, j, processor.getAverageRgb());
+                img.setRGB(i, j, getAverageRgb(getSubMatrix(i, j)));
             }
         }
 
         System.out.println("Filtering done!");
+    }
+
+    private int getAverageRgb(Color[][] subMatrix) {
+        int sumR = 0;
+        int sumG = 0;
+        int sumB = 0;
+        for (Color[] row : subMatrix) {
+            for (Color col : row) {
+                sumR += col.getRed();
+                sumG += col.getGreen();
+                sumB += col.getBlue();
+            }
+        }
+
+        int n2 = subMatrix.length * subMatrix.length;
+
+        return new Color(sumR / n2, sumG / n2, sumB / n2).getRGB();
     }
 
     private Color[][] getSubMatrix(int x, int y) {
