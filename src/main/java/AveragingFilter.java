@@ -72,7 +72,7 @@ class AveragingFilter {
         if (target < 0 || target >= img.getHeight()) {
             pos = origin + diff;
         } else {
-            pos = origin - diff;
+            pos = target;
         }
 
         return pos;
