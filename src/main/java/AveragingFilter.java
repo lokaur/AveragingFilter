@@ -34,6 +34,8 @@ class AveragingFilter {
 
     void filter() {
         System.out.println("Filtering...");
+        Runtime rt = Runtime.getRuntime();
+        long memoryAtStart = rt.freeMemory();
         long startTime = System.currentTimeMillis();
 
         for (int i = 0; i < img.getWidth(); i++) {
@@ -43,8 +45,11 @@ class AveragingFilter {
         }
 
         long endTime = System.currentTimeMillis();
+        long free = rt.freeMemory();
+
         System.out.println("Filtering done!");
         System.out.println("Working time: " + (endTime - startTime) + "ms");
+        System.out.println("Allocated memory: " + ((memoryAtStart - free) / 1024) + " kbs");
     }
 
     private int getAverageRgb(int x, int y) {
