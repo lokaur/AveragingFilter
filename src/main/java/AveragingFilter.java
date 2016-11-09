@@ -34,7 +34,7 @@ class AveragingFilter {
     }
 
     void filter() {
-        System.out.println("Filtering...");
+        System.out.println("Start filtering for n = " + frameSide);
         Runtime rt = Runtime.getRuntime();
         long memoryAtStart = rt.freeMemory();
         long startTime = System.currentTimeMillis();
