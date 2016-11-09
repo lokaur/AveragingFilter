@@ -54,7 +54,6 @@ class AveragingFilter {
     }
 
     private int getAverageRgb(int x, int y) {
-
         if (x == 0) {
             for (int i = 0; i < frameSide; i++) {
                 averageBuffer[i] = getAverageRgbAtCol(i, x, y);
