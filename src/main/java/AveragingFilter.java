@@ -41,7 +41,7 @@ class AveragingFilter {
 
         for (int i = 0; i < img.getWidth(); i++) {
             for (int j = 0; j < img.getHeight(); j++) {
-                img.setRGB(i, j, getAverageRgb(i, j));
+                img.setRGB(j, i, getAverageRgb(j, i));
             }
         }
 
@@ -60,16 +60,11 @@ class AveragingFilter {
                 averageBuffer[i] = getAverageRgbAtCol(i, x, y);
             }
         } else {
-            moveBuffer();
-            averageBuffer[frameSide - 1] = getAverageRgbAtCol(frameSide, x, y);
+            System.arraycopy(averageBuffer, 1, averageBuffer, 0, frameSide - 1);
+            averageBuffer[frameSide - 1] = getAverageRgbAtCol(frameSide - 1, x, y);
         }
 
         return getAverageByCols();
-    }
-
-    private void moveBuffer() {
-        System.arraycopy(averageBuffer, 1, averageBuffer, 0, frameSide - 1);
-        averageBuffer[frameSide - 1] = 0;
     }
 
     private int getAverageByCols() {
