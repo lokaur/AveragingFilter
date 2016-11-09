@@ -9,6 +9,7 @@ class AveragingFilter {
     private int frameSide;
     private int halfFrame;
     private int squareFrame;
+    private int[] averageBuffer;
 
     AveragingFilter(String in, String number) {
         try {
@@ -21,6 +22,7 @@ class AveragingFilter {
 
             halfFrame = frameSide / 2;
             squareFrame = frameSide * frameSide;
+            averageBuffer = new int[frameSide];
             img = ImageIO.read(new File(in));
         } catch (NumberFormatException e) {
             System.out.println("Error parsing string: " + number);
@@ -52,37 +54,68 @@ class AveragingFilter {
     }
 
     private int getAverageRgb(int x, int y) {
+
+        if (x == 0) {
+            for (int i = 0; i < frameSide; i++) {
+                averageBuffer[i] = getAverageRgbAtCol(i, x, y);
+            }
+        } else {
+            moveBuffer();
+            averageBuffer[frameSide - 1] = getAverageRgbAtCol(frameSide, x, y);
+        }
+
+        return getAverageByCols();
+    }
+
+    private void moveBuffer() {
+        System.arraycopy(averageBuffer, 1, averageBuffer, 0, frameSide - 1);
+        averageBuffer[frameSide - 1] = 0;
+    }
+
+    private int getAverageByCols() {
+        int sumR = 0;
+        int sumG = 0;
+        int sumB = 0;
+        for (int anAverageBuffer : averageBuffer) {
+            sumR += (anAverageBuffer >> 16) & 0xFF;
+            sumG += (anAverageBuffer >> 8) & 0xFF;
+            sumB += (anAverageBuffer) & 0xFF;
+        }
+
+        return getRgbModel(sumR, sumG, sumB);
+    }
+
+    private int getAverageRgbAtCol(int col, int x, int y) {
         int sumR = 0;
         int sumG = 0;
         int sumB = 0;
 
-        for (int i = 0; i < frameSide; i++) {
-            for (int j = 0; j < frameSide; j++) {
-                int rgb = img.getRGB(getPos(x, i, img.getWidth()), getPos(y, j, img.getHeight()));
-                sumR += (rgb >> 16) & 0xFF;
-                sumG += (rgb >> 8) & 0xFF;
-                sumB += (rgb) & 0xFF;
-            }
+        for (int j = 0; j < frameSide; j++) {
+            int rgb = img.getRGB(getPos(x, col, img.getWidth()), getPos(y, j, img.getHeight()));
+            sumR += (rgb >> 16) & 0xFF;
+            sumG += (rgb >> 8) & 0xFF;
+            sumB += (rgb) & 0xFF;
         }
 
+        return getRgbModel(sumR / squareFrame, sumG / squareFrame, sumB / squareFrame);
+    }
+
+    private int getRgbModel(int r, int g, int b) {
         return ((1 & 0xFF) << 24) |
-                ((sumR / squareFrame & 0xFF) << 16) |
-                ((sumG / squareFrame & 0xFF) << 8) |
-                ((sumB / squareFrame & 0xFF));
+                ((r & 0xFF) << 16) |
+                ((g & 0xFF) << 8) |
+                ((b & 0xFF));
     }
 
     private int getPos(int origin, int current, int maxSize) {
         int diff = halfFrame - current;
         int target = origin - diff;
-        int pos;
 
         if (target < 0 || target >= maxSize) {
-            pos = origin + diff;
+            return origin + diff;
         } else {
-            pos = target;
+            return target;
         }
-
-        return pos;
     }
 
     void writeImg(String output) {
